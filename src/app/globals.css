@@ -1,12 +1,18 @@
 @import "tailwindcss";
 
-body {
-  font-family: Arial, Helvetica, sans-serif;
-}
+@import "tailwindcss";
 
+/* ---------------------------------------
+   Custom Theme (Tailwind v4 way)
+---------------------------------------- */
 @theme {
-  --color-gray-light: #3c3c3c;
-  --color-gray: #333333;
-  --color-dark: #1e1e1e;
-  --color-blue: #007acc;
+  /* Fonts */
+  --font-cormorant: "Cormorant Garamond", serif;
+  --font-mono: "DM Mono", monospace;
+
+  /* Gold Color Palette */
+  --color-gold: #c9a96e;
+  --color-gold-muted: rgba(201, 169, 110, 0.5);
+  --color-gold-dim: rgba(201, 169, 110, 0.2);
+  --color-gold-glow: rgba(201, 169, 110, 0.08);
 }
