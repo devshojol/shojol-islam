@@ -37,6 +37,13 @@ import React, {
 import HTMLFlipBook from "react-pageflip";
 
 // ─────────────────────────────────────────────────────────────────
+// stopFlip — call on any interactive element inside a page to
+// prevent react-pageflip from treating the click as a flip gesture.
+// Usage: <button onClick={stopFlip} …>  or  onMouseDown={stopFlip}
+// ─────────────────────────────────────────────────────────────────
+const stopFlip = (e) => e.stopPropagation();
+
+// ─────────────────────────────────────────────────────────────────
 // Breakpoint thresholds (px)
 // ─────────────────────────────────────────────────────────────────
 const BP = {
@@ -166,8 +173,14 @@ const BookPage = forwardRef(function BookPage(
         />
       )}
 
-      {/* Scrollable content — uses full page height */}
-      <div className="relative z-20 h-full w-full overflow-x-hidden overflow-y-auto [scrollbar-color:rgba(201,169,110,0.18)_transparent] [scrollbar-width:thin]">
+      {/* Scrollable content — uses full page height.
+          onMouseDown/onTouchStart stopPropagation prevents react-pageflip
+          from treating any click/drag inside the content as a flip gesture. */}
+      <div
+        className="relative z-20 h-full w-full overflow-x-hidden overflow-y-auto [scrollbar-color:rgba(201,169,110,0.18)_transparent] [scrollbar-width:thin]"
+        onMouseDown={stopFlip}
+        onTouchStart={stopFlip}
+      >
         {children}
       </div>
     </div>
@@ -240,6 +253,7 @@ const AboutPage = forwardRef(function AboutPage(_, ref) {
           {skills.map((s) => (
             <span
               key={s}
+              onMouseDown={stopFlip}
               className="border-gold/10 hover:border-gold/30 hover:text-gold/70 cursor-default rounded-sm border px-2 py-[3px] font-mono text-[9px] tracking-[0.16em] text-white/35 uppercase transition-all duration-200 sm:px-2.5 sm:py-1"
             >
               {s}
@@ -304,6 +318,8 @@ const ProjectsPage = forwardRef(function ProjectsPage(_, ref) {
           {PROJECTS.map((p, i) => (
             <div
               key={p.name}
+              onMouseDown={stopFlip}
+              onClick={stopFlip}
               className="group flex cursor-pointer items-start gap-3 py-3.5 sm:gap-4 sm:py-[14px]"
             >
               <span className="min-w-[18px] pt-0.5 font-mono text-[10px] text-white/15 sm:min-w-[20px]">
@@ -421,6 +437,11 @@ const ResumePage = forwardRef(function ResumePage(_, ref) {
         {/* Download CTA */}
         <a
           href="#"
+          onClick={(e) => {
+            e.preventDefault();
+            stopFlip(e);
+          }}
+          onMouseDown={stopFlip}
           className="text-gold border-gold/20 hover:bg-gold/5 hover:border-gold/40 mt-auto inline-flex items-center gap-2.5 self-start rounded-sm border px-3.5 py-2 font-mono text-[10px] tracking-[0.2em] uppercase transition-all duration-200"
         >
           Download CV <span className="text-base leading-none">↓</span>
@@ -455,6 +476,8 @@ const ContactPage = forwardRef(function ContactPage(_, ref) {
         {!sent ? (
           <form
             className="mb-4 flex flex-col gap-3 sm:mb-5 sm:gap-3.5"
+            onMouseDown={stopFlip}
+            onTouchStart={stopFlip}
             onSubmit={(e) => {
               e.preventDefault();
               setSent(true);
@@ -472,6 +495,8 @@ const ContactPage = forwardRef(function ContactPage(_, ref) {
                   type={type}
                   placeholder={ph}
                   required
+                  onMouseDown={stopFlip}
+                  onClick={stopFlip}
                   className="border-gold/10 focus:border-gold/30 w-full rounded-sm border bg-white/[0.025] px-3 py-2 font-mono text-[12px] text-white/75 transition-colors duration-200 outline-none placeholder:text-white/18"
                 />
               </div>
@@ -485,12 +510,16 @@ const ContactPage = forwardRef(function ContactPage(_, ref) {
                 placeholder="Tell me about your project…"
                 rows={3}
                 required
+                onMouseDown={stopFlip}
+                onClick={stopFlip}
                 className="border-gold/10 focus:border-gold/30 w-full resize-none rounded-sm border bg-white/[0.025] px-3 py-2 font-mono text-[12px] text-white/75 transition-colors duration-200 outline-none placeholder:text-white/18"
               />
             </div>
 
             <button
               type="submit"
+              onMouseDown={stopFlip}
+              onClick={stopFlip}
               className="bg-gold cursor-pointer self-start rounded-sm px-4 py-2.5 font-mono text-[10px] tracking-[0.2em] text-[#0d0d0d] uppercase transition-opacity duration-200 hover:opacity-85"
             >
               Send Message →
@@ -513,6 +542,11 @@ const ContactPage = forwardRef(function ContactPage(_, ref) {
             <a
               key={label}
               href="#"
+              onClick={(e) => {
+                e.preventDefault();
+                stopFlip(e);
+              }}
+              onMouseDown={stopFlip}
               className="border-gold/10 hover:text-gold group flex items-center justify-between border-b py-2.5 text-white/75 transition-colors duration-200 sm:py-3"
             >
               <span className="group-hover:text-gold/55 font-mono text-[9px] tracking-[0.25em] text-white/28 uppercase transition-colors">
@@ -759,7 +793,7 @@ export default function FlipbookPortfolio() {
           useMouseEvents
           swipeDistance={isMobile ? 20 : 40}
           showPageCorners
-          disableFlipByClick={false}
+          disableFlipByClick={true}
           onFlip={onFlip}
           className="!shadow-none !outline-none"
           style={{ margin: 0 }}
